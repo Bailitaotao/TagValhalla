@@ -1,0 +1,31 @@
+{
+  "name": "tagvalhalla",
+  "version": "1.0.0",
+  "description": "Minecraft Bedrock Edition addon for tracking mob information and dropping nametags with data on death",
+  "main": "behavior_pack/scripts/main.js",
+  "scripts": {
+    "build": "echo 'Building addon...'",
+    "test": "echo 'Testing addon...'",
+    "dev": "echo 'Development mode...'"
+  },
+  "keywords": [
+    "minecraft",
+    "bedrock",
+    "addon",
+    "behavior-pack",
+    "script-api"
+  ],
+  "author": "Tim",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/TagValhalla.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/TagValhalla/issues"
+  },
+  "homepage": "https://github.com/yourusername/TagValhalla#readme"
+}

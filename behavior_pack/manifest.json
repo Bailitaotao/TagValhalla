@@ -1,0 +1,36 @@
+{
+  "format_version": 2,
+  "header": {
+    "description": "TagValhalla Behavior Pack - 生物信息记录系统",
+    "name": "TagValhalla BP",
+    "uuid": "12345678-1234-1234-1234-123456789abc",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 20, 0]
+  },
+  "modules": [
+    {
+      "description": "TagValhalla Behavior Pack",
+      "type": "data",
+      "uuid": "87654321-4321-4321-4321-cba987654321",
+      "version": [1, 0, 0]
+    },
+    {
+      "description": "TagValhalla Script Module",
+      "type": "script",
+      "language": "javascript",
+      "uuid": "11223344-5566-7788-9900-aabbccddeeff",
+      "version": [1, 0, 0],
+      "entry": "scripts/main.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "1.8.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "1.2.0"
+    }
+  ]
+}

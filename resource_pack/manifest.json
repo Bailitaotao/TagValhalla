@@ -1,0 +1,18 @@
+{
+  "format_version": 2,
+  "header": {
+    "description": "TagValhalla Resource Pack - 生物信息记录系统资源",
+    "name": "TagValhalla RP",
+    "uuid": "aabbccdd-eeff-1122-3344-556677889900",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 20, 0]
+  },
+  "modules": [
+    {
+      "description": "TagValhalla Resource Pack",
+      "type": "resources",
+      "uuid": "ffeeddcc-bbaa-9988-7766-554433221100",
+      "version": [1, 0, 0]
+    }
+  ]
+}
