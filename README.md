@@ -37,7 +37,8 @@ TagValhalla/
 │   │   └── items/                # 物品贴图
 │   └── models/                   # 模型文件
 │       └── entity/               # 实体模型
-└── README.md                     # 项目说明文档
+├── README.md                     # 项目说明文档
+└── USAGE.md                      # 使用说明
 ```
 
 ## 核心组件
@@ -103,7 +104,8 @@ TagValhalla/
 1. 将 `behavior_pack` 文件夹复制到你的世界存档的 `behavior_packs` 目录
 2. 将 `resource_pack` 文件夹复制到你的世界存档的 `resource_packs` 目录
 3. 在世界设置中启用这两个包
-4. 启动世界，addon将自动开始工作
+4. **重要**：启用实验性功能中的 "Beta APIs" 和 "Script API"
+5. 启动世界，addon将自动开始工作
 
 ## 使用说明
 
@@ -111,6 +113,8 @@ TagValhalla/
 2. **与生物互动**: 通过喂食、抚摸、治疗等方式与生物互动，提升好感度
 3. **查看信息**: 生物死亡后会掉落信息名牌，右键使用可查看详细信息
 4. **收集记录**: 收集不同生物的信息名牌，建立你的生物档案
+
+详细使用方法请参考 [USAGE.md](USAGE.md)
 
 ## 开发状态
 
