@@ -25,6 +25,15 @@ class TagValhalla {
         
         // 启动定时任务
         this.startPeriodicTasks();
+        
+        // 显示使用提示
+        system.runTimeout(() => {
+            console.log('=== TagValhalla 使用说明 ===');
+            console.log('1. 用名牌为生物命名，它们将被系统记录');
+            console.log('2. 生物死亡时会掉落包含详细信息的名牌');
+            console.log('3. 右键使用信息名牌查看生物的生存记录');
+            console.log('4. 与生物互动(喂食/抚摸)可增加好感度');
+        }, 60); // 3秒后显示使用提示
     }
 
     startPeriodicTasks() {

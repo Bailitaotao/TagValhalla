@@ -33,8 +33,12 @@ export class EventHandler {
             if (this.isMobEntity(entity)) {
                 // 延迟注册，确保实体完全加载
                 system.runTimeout(() => {
-                    this.mobDataManager.registerMob(entity);
-                    console.log(`注册新生物: ${entity.typeId} (ID: ${entity.id})`);
+                    try {
+                        this.mobDataManager.registerMob(entity);
+                        console.log(`注册新生物: ${entity.typeId} (ID: ${entity.id})`);
+                    } catch (error) {
+                        console.error('注册新生物失败:', error);
+                    }
                 }, 1);
             }
         });
@@ -48,32 +52,36 @@ export class EventHandler {
             const deadEntity = event.deadEntity;
             const damageSource = event.damageSource;
             
-            // 如果死亡的是被记录的生物
-            if (this.isMobEntity(deadEntity)) {
-                const mobData = this.mobDataManager.getMobData(deadEntity.id);
-                if (mobData) {
-                    // 创建信息名牌
-                    const infoNametag = this.nametagHandler.createInfoNametag(mobData);
-                    
-                    if (infoNametag) {
-                        // 在死亡位置掉落名牌
-                        this.dropNametagAtLocation(deadEntity, infoNametag);
-                        console.log(`${deadEntity.typeId} 死亡，掉落信息名牌`);
+            try {
+                // 如果死亡的是被记录的生物
+                if (this.isMobEntity(deadEntity)) {
+                    const mobData = this.mobDataManager.getMobData(deadEntity.id);
+                    if (mobData) {
+                        // 创建信息名牌
+                        const infoNametag = this.nametagHandler.createInfoNametag(mobData);
+                        
+                        if (infoNametag) {
+                            // 在死亡位置掉落名牌
+                            this.dropNametagAtLocation(deadEntity, infoNametag);
+                            console.log(`${deadEntity.typeId} 死亡，掉落信息名牌`);
+                        }
+                        
+                        // 记录击杀者信息
+                        if (damageSource && damageSource.damagingEntity) {
+                            this.handleKillEvent(damageSource.damagingEntity, deadEntity);
+                        }
+                        
+                        // 清理生物数据
+                        this.mobDataManager.removeMobData(deadEntity.id);
                     }
-                    
-                    // 记录击杀者信息
-                    if (damageSource.damagingEntity) {
-                        this.handleKillEvent(damageSource.damagingEntity, deadEntity);
-                    }
-                    
-                    // 清理生物数据
-                    this.mobDataManager.removeMobData(deadEntity.id);
                 }
-            }
-            
-            // 如果击杀者是被记录的生物，更新其击杀统计
-            if (damageSource.damagingEntity && this.isMobEntity(damageSource.damagingEntity)) {
-                this.mobDataManager.recordKill(damageSource.damagingEntity.id, deadEntity.typeId);
+                
+                // 如果击杀者是被记录的生物，更新其击杀统计
+                if (damageSource && damageSource.damagingEntity && this.isMobEntity(damageSource.damagingEntity)) {
+                    this.mobDataManager.recordKill(damageSource.damagingEntity.id, deadEntity.typeId);
+                }
+            } catch (error) {
+                console.error('处理死亡事件失败:', error);
             }
         });
     }
@@ -83,33 +91,37 @@ export class EventHandler {
      */
     registerInteractionEvents() {
         world.afterEvents.playerInteractWithEntity.subscribe((event) => {
-            const player = event.player;
-            const entity = event.target;
-            const item = event.itemStack;
-            
-            if (this.isMobEntity(entity)) {
-                const mobData = this.mobDataManager.getMobData(entity.id);
-                if (mobData) {
-                    // 根据使用的物品判断互动类型
-                    if (item) {
-                        if (this.isFoodItem(item)) {
-                            this.mobDataManager.recordInteraction(entity.id, 'fed');
-                            this.mobDataManager.updateAffection(entity.id, 5);
-                        } else if (this.isHealingItem(item)) {
-                            this.mobDataManager.recordInteraction(entity.id, 'healed');
-                            this.mobDataManager.updateAffection(entity.id, 10);
+            try {
+                const player = event.player;
+                const entity = event.target;
+                const item = event.itemStack;
+                
+                if (this.isMobEntity(entity)) {
+                    const mobData = this.mobDataManager.getMobData(entity.id);
+                    if (mobData) {
+                        // 根据使用的物品判断互动类型
+                        if (item) {
+                            if (this.isFoodItem(item)) {
+                                this.mobDataManager.recordInteraction(entity.id, 'fed');
+                                this.mobDataManager.updateAffection(entity.id, 5);
+                            } else if (this.isHealingItem(item)) {
+                                this.mobDataManager.recordInteraction(entity.id, 'healed');
+                                this.mobDataManager.updateAffection(entity.id, 10);
+                            }
+                        } else {
+                            // 空手互动视为抚摸
+                            this.mobDataManager.recordInteraction(entity.id, 'petted');
+                            this.mobDataManager.updateAffection(entity.id, 2);
                         }
-                    } else {
-                        // 空手互动视为抚摸
-                        this.mobDataManager.recordInteraction(entity.id, 'petted');
-                        this.mobDataManager.updateAffection(entity.id, 2);
-                    }
-                    
-                    // 设置主人（针对可驯服生物）
-                    if (this.isTameableEntity(entity) && !mobData.owner) {
-                        mobData.owner = player.name;
+                        
+                        // 设置主人（针对可驯服生物）
+                        if (this.isTameableEntity(entity) && !mobData.owner && player && player.name) {
+                            mobData.owner = player.name;
+                        }
                     }
                 }
+            } catch (error) {
+                console.error('处理互动事件失败:', error);
             }
         });
     }
@@ -138,12 +150,15 @@ export class EventHandler {
     registerPlayerEvents() {
         world.afterEvents.playerJoin.subscribe((event) => {
             const player = event.player;
-            console.log(`玩家 ${player.name} 加入游戏`);
+            if (player && player.name) {
+                console.log(`玩家 ${player.name} 加入游戏`);
+            }
         });
 
         world.afterEvents.playerLeave.subscribe((event) => {
-            const player = event.player;
-            console.log(`玩家 ${player.name} 离开游戏`);
+            // playerLeave 事件中 player 可能不可用，使用 playerId
+            const playerId = event.playerId;
+            console.log(`玩家 ${playerId} 离开游戏`);
         });
     }
 

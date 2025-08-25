@@ -16,47 +16,69 @@ export class MobDataManager {
      * 获取生物数据结构
      */
     createMobData(entity) {
-        return {
-            id: entity.id,
-            typeId: entity.typeId,
-            name: entity.nameTag || '',
-            spawnTime: Date.now(),
-            lifetime: 0,
-            killCount: {
-                players: 0,
-                mobs: 0,
-                specific: {} // 具体击杀类型统计
-            },
-            affection: 0, // 好感度
-            interactions: {
-                fed: 0, // 喂食次数
-                petted: 0, // 抚摸次数
-                healed: 0 // 治疗次数
-            },
-            location: {
-                dimension: entity.dimension.id,
-                x: Math.floor(entity.location.x),
-                y: Math.floor(entity.location.y),
-                z: Math.floor(entity.location.z)
-            },
-            health: {
-                max: entity.getComponent('minecraft:health')?.maxValue || 20,
-                current: entity.getComponent('minecraft:health')?.currentValue || 20
-            },
-            owner: null, // 如果是宠物，记录主人
-            isNamed: !!entity.nameTag,
-            achievements: [], // 成就列表
-            customData: {} // 自定义数据
-        };
+        if (!entity) return null;
+        
+        try {
+            const healthComponent = entity.getComponent('minecraft:health');
+            const dimension = entity.dimension;
+            const location = entity.location;
+            
+            return {
+                id: entity.id || 'unknown',
+                typeId: entity.typeId || 'unknown',
+                name: entity.nameTag || '',
+                spawnTime: Date.now(),
+                lifetime: 0,
+                killCount: {
+                    players: 0,
+                    mobs: 0,
+                    specific: {} // 具体击杀类型统计
+                },
+                affection: 0, // 好感度
+                interactions: {
+                    fed: 0, // 喂食次数
+                    petted: 0, // 抚摸次数
+                    healed: 0 // 治疗次数
+                },
+                location: {
+                    dimension: dimension ? dimension.id : 'unknown',
+                    x: location ? Math.floor(location.x) : 0,
+                    y: location ? Math.floor(location.y) : 0,
+                    z: location ? Math.floor(location.z) : 0
+                },
+                health: {
+                    max: healthComponent ? healthComponent.maxValue : 20,
+                    current: healthComponent ? healthComponent.currentValue : 20
+                },
+                owner: null, // 如果是宠物，记录主人
+                isNamed: !!entity.nameTag,
+                achievements: [], // 成就列表
+                customData: {} // 自定义数据
+            };
+        } catch (error) {
+            console.error('创建生物数据失败:', error);
+            return null;
+        }
     }
 
     /**
      * 注册新生物
      */
     registerMob(entity) {
-        if (!this.mobData.has(entity.id)) {
-            this.mobData.set(entity.id, this.createMobData(entity));
+        if (!entity || !entity.id) return false;
+        
+        try {
+            if (!this.mobData.has(entity.id)) {
+                const mobData = this.createMobData(entity);
+                if (mobData) {
+                    this.mobData.set(entity.id, mobData);
+                    return true;
+                }
+            }
+        } catch (error) {
+            console.error('注册生物失败:', error);
         }
+        return false;
     }
 
     /**
