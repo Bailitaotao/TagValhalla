@@ -3,6 +3,7 @@
 ## 项目简介
 
 岂容挚友亡逝，踪迹无寻？怎忍战友功绩，湮没于尘？TagValhalla｜生平录——为你的世界，铭刻每一段传奇。本Addon可以在生物死亡时掉落带有详细信息记录的名牌（nametag）。这些名牌会记录生物的各种信息，包括生存时长、好感度、击杀统计等数据。
+![Screenshot-2025-08-26-001738](https://github.com/user-attachments/assets/bef7751e-ee8d-4f95-b256-73d8bb3a7fbe)
 
 ## 功能特性
 
